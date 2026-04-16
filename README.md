@@ -70,12 +70,14 @@ class MyMemorySystem(MemoryAdapter):
 
 ## Reference Adapters
 
-| Adapter | Retrieval | Retrieval tokens | Description |
-|---------|-----------|-----------------|-------------|
-| `accumulate` | None | 0 | Load everything. TCCA baseline. |
-| `bm25` | BM25 (lexical) | 0 | Programmatic keyword retrieval. |
-| `vector-rag` | Embedding similarity | 0 | Semantic search via sentence-transformers. |
-| `llm-compression` | LLM-driven | >0 | Agent compresses on store, answers from compressed KB. |
+| Adapter | Retrieval | LLM retrieval tokens | Description |
+|---------|-----------|---------------------|-------------|
+| `accumulate` | None | 0 | Load everything. TCCA = 1.0 baseline. |
+| `bm25` | BM25 (lexical) | 0 | Programmatic keyword matching. No LLM calls for retrieval. |
+| `vector-rag` | Embedding similarity | 0 | Semantic search via sentence-transformers. Embedding compute is CPU cost, not LLM tokens. |
+| `llm-compression` | LLM-driven | >0 | Agent uses LLM to compress on store and reason about retrieval on query. |
+
+Note: `retrieval_tokens` in TCCA tracks **LLM token spend** specifically — the cost of reasoning about what to retrieve. Programmatic systems (BM25, vector search) have real compute costs (CPU, embedding inference) but zero LLM token cost, which TCCA reflects. This is by design: TCCA measures the cost of the *intelligence* in the retrieval pipeline, not the infrastructure.
 
 ## Quick Start
 
@@ -123,17 +125,7 @@ From initial smoke tests with Gemma 4 26B:
 | vector-rag | 38% | 0.38 | 14,234 |
 | llm-compression | 75% | 0.75 | 28,435 |
 
-BM25 dominates on single-session questions (zero retrieval cost + good accuracy). The hypothesis: LLM-driven compression should outperform on multi-session questions where BM25 fragments evidence. Full results pending.
-
-## The Hypothesis
-
-This benchmark was built to test the Compression Hypothesis:
-
-> Agent viability reduces to lossy compression of structural memory. An agent that compresses evolves. An agent that accumulates degrades. Compression is a learnable skill.
-
-**Falsifiable claim:** A compression agent achieves TCCA > 1.5 on multi-session and temporal-reasoning questions at step 6, without accuracy falling below BM25 by more than 5 percentage points.
-
-See: [The Compression Hypothesis](https://docs.google.com/document/d/1Crg1aWYohatj2SvP4Ec-1-_norNLUGmu1iYCv2X0pjw/edit?tab=t.oq4nt0h0iypg) for the full paper.
+BM25 dominates on single-session questions (zero retrieval cost + good accuracy). Multi-session and temporal-reasoning question types — where evidence is scattered across sessions — are where the interesting differentiation should emerge. Full results across all question types pending.
 
 ## Contributing
 

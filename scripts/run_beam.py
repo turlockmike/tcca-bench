@@ -42,6 +42,13 @@ def load_adapter(name: str, model: str, work_dir: Path):
     elif name == "llm-compression":
         from tcca_bench.adapters.llm_compression import LLMCompressionAdapter
         return LLMCompressionAdapter(model=model, work_dir=str(work_dir), ollama_url=OLLAMA_URL)
+    elif name == "memfs":
+        from tcca_bench.adapters.memfs_adapter import MemfsAdapter
+        return MemfsAdapter(model=model, topk=5, ollama_url=OLLAMA_URL)
+    elif name == "memfs-graph":
+        # memfs with one-hop :LINK expansion enabled (graph-hypothesis mode).
+        from tcca_bench.adapters.memfs_adapter import MemfsAdapter
+        return MemfsAdapter(model=model, topk=5, expand_hops=1, ollama_url=OLLAMA_URL)
     else:
         raise ValueError(f"Unknown adapter: {name}")
 

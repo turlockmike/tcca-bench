@@ -23,6 +23,7 @@ The benchmark harness runs end-to-end on two datasets (LongMemEval and BEAM) wit
 | `adapters/bm25_adapter.py` | ✅ stable | Programmatic BM25 retrieval, top-K sessions |
 | `adapters/vector_rag.py` | ✅ stable | Sentence-transformer embedding similarity |
 | `adapters/llm_compression.py` | ⚠️ broken at scale | Extracts facts at store-time, answers from compressed index |
+| `adapters/memfs_adapter.py` | ✅ integration tested | Third-party adapter — memfs graph memory (Neo4j fulltext + optional one-hop :LINK expansion) |
 | `eval_step.py` | ✅ stable | Ollama-based answer grading (think:false for clean yes/no) |
 | `retrieve.py` | ✅ stable | Standalone BM25 over a file-based KB |
 
@@ -233,7 +234,13 @@ Current Ollama setup gives Gemma 4 26B at 32K context. To test TCCA at real 1M s
 
 ### 4. Add a third-party adapter
 
-Prove the interface works for something that isn't ours. Candidates:
+**Status: first one landed.** `memfs` adapter (`tcca_bench/adapters/memfs_adapter.py`) wraps [memfs](https://github.com/turlockmike/memfs), a file-backed Neo4j-indexed memory store. Two registered variants:
+- `memfs` — pure fulltext retrieval, top-K :Node.content via the `node_content` Lucene index, zero retrieval_tokens.
+- `memfs-graph` — same, plus one-hop :LINK expansion. Tests the "graph memory" candidate fix listed under issue #1.
+
+Trial isolation: each `MemfsAdapter` instance owns a path-prefix (`tcca/<trial_id>/`). All fulltext queries and `reset()` filter by prefix, so it's safe to point at a shared Neo4j. Smoke-tested end-to-end (store → query → reset, Neo4j clean after).
+
+Still wanted for broader interface validation:
 - **Mem0** — has a clean Python API. Wrap `mem0.Memory.add()` and `mem0.Memory.search()` in the adapter interface.
 - **Letta/MemGPT** — more involved but well-documented.
 - **Zep** — REST API, good for showing the interface handles remote services.

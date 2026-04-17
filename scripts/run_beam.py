@@ -72,13 +72,12 @@ def run_step_questions(
 
         elapsed = time.time() - t0
 
-        # Grade
+        # Grade (abstention is handled inside grade() — don't short-circuit)
         task_success = False
-        if hypothesis and hypothesis.lower() not in ("i don't know", "i don't know.", ""):
-            try:
-                task_success = grade(eval_model, question, answer, hypothesis, qtype, OLLAMA_URL)
-            except Exception as e:
-                print(f"        grade error: {e}")
+        try:
+            task_success = grade(eval_model, question, answer, hypothesis, qtype, OLLAMA_URL)
+        except Exception as e:
+            print(f"        grade error: {e}")
 
         # TCCA
         total_tokens = query_usage.total

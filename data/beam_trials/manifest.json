@@ -1,0 +1,56 @@
+[
+  {
+    "conversation_id": "1",
+    "n_steps": 10,
+    "n_questions": 20,
+    "question_types": [
+      "multi_session_reasoning",
+      "abstention",
+      "information_extraction",
+      "instruction_following",
+      "event_ordering",
+      "summarization",
+      "contradiction_resolution",
+      "knowledge_update",
+      "temporal_reasoning",
+      "preference_following"
+    ],
+    "total_tokens": 1061523
+  },
+  {
+    "conversation_id": "2",
+    "n_steps": 10,
+    "n_questions": 20,
+    "question_types": [
+      "multi_session_reasoning",
+      "abstention",
+      "information_extraction",
+      "instruction_following",
+      "event_ordering",
+      "summarization",
+      "contradiction_resolution",
+      "knowledge_update",
+      "temporal_reasoning",
+      "preference_following"
+    ],
+    "total_tokens": 1056155
+  },
+  {
+    "conversation_id": "3",
+    "n_steps": 10,
+    "n_questions": 20,
+    "question_types": [
+      "multi_session_reasoning",
+      "abstention",
+      "information_extraction",
+      "instruction_following",
+      "event_ordering",
+      "summarization",
+      "contradiction_resolution",
+      "knowledge_update",
+      "temporal_reasoning",
+      "preference_following"
+    ],
+    "total_tokens": 903516
+  }
+]

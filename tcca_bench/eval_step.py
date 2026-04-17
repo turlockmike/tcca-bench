@@ -74,10 +74,35 @@ def get_eval_prompt(question_type: str, question: str, answer: str, hypothesis: 
         )
 
 
+ABSTAIN_PHRASES = (
+    "i don't know",
+    "i don't know.",
+    "i do not know",
+    "i do not know.",
+    "no information",
+    "not in the context",
+    "not mentioned",
+    "cannot determine",
+)
+
+
+def _is_abstention(text: str) -> bool:
+    t = (text or "").strip().lower()
+    if not t:
+        return True
+    return any(p in t for p in ABSTAIN_PHRASES)
+
+
 def grade(model: str, question: str, answer: str, hypothesis: str, question_type: str, ollama_url: str = None) -> bool:
     """Call Ollama to grade an answer. Returns True if correct."""
     url = ollama_url or OLLAMA_URL
-    if not hypothesis or hypothesis.strip().lower() in ("", "i don't know", "i don't know."):
+
+    # Abstention: correct answer IS to abstain. Don't call the judge.
+    if question_type == "abstention":
+        return _is_abstention(hypothesis)
+
+    # For non-abstention types, an empty or abstaining hypothesis is wrong.
+    if not hypothesis or _is_abstention(hypothesis):
         return False
 
     prompt = get_eval_prompt(question_type, question, answer, hypothesis)

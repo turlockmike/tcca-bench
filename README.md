@@ -76,6 +76,8 @@ class MyMemorySystem(MemoryAdapter):
 | `bm25` | BM25 (lexical) | 0 | Programmatic keyword matching. No LLM calls for retrieval. |
 | `vector-rag` | Embedding similarity | 0 | Semantic search via sentence-transformers. Embedding compute is CPU cost, not LLM tokens. |
 | `llm-compression` | LLM-driven | >0 | Agent uses LLM to compress on store and reason about retrieval on query. |
+| `memfs` | Neo4j fulltext (Lucene) | 0 | Third-party: [memfs](https://github.com/turlockmike/memfs) graph memory store. Path-prefix-scoped per trial. |
+| `memfs-graph` | memfs + one-hop :LINK expansion | 0 | memfs with graph-neighborhood mode on. Tests the "graph memory" hypothesis. |
 
 Note: `retrieval_tokens` in TCCA tracks **LLM token spend** specifically — the cost of reasoning about what to retrieve. Programmatic systems (BM25, vector search) have real compute costs (CPU, embedding inference) but zero LLM token cost, which TCCA reflects. This is by design: TCCA measures the cost of the *intelligence* in the retrieval pipeline, not the infrastructure.
 
@@ -113,6 +115,10 @@ python scripts/run_tcca.py \
 - Python 3.10+
 - [Ollama](https://ollama.com) running locally with a chat model
 - LongMemEval dataset (downloaded separately)
+
+**Optional (for the `memfs` adapter):**
+- [memfs](https://github.com/turlockmike/memfs) Python package: `pip install git+https://github.com/turlockmike/memfs`
+- Neo4j 5.x reachable at `MEMFS_NEO4J_URI` (default `bolt://localhost:7687`). memfs ships a docker-compose spec for a local instance.
 
 ## Preliminary Results
 
